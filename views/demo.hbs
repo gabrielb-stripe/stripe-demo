@@ -1,0 +1,33 @@
+<div class="bg-white">
+  <div class="max-w-7xl mx-auto text-center py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
+    <div class="mt-8 justify-center">
+      <div class="rounded-md py-4">
+        <a href="/customer" class="inline-flex items-center px-4 py-2 border border-gray-700 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          Create Customer
+        </a>
+      </div>
+      <div class="rounded-md py-4">
+        {{#if hasDefaultCustomer}}
+        <a href="/customer-portal" class="inline-flex items-center px-4 py-2 border border-gray-700 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          View Customer Portal
+        </a>
+        {{else}}
+        <button onclick="alert('Need to create a Customer first!')" class="inline-flex items-center px-4 py-2 border border-gray-700 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          View Customer Portal
+        </button>
+        {{/if}}
+      </div>
+      <div class="rounded-md py-4">
+        {{#if hasDefaultCustomer}}
+        <a href="/setup-intent" class="inline-flex items-center px-4 py-2 border border-gray-700 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          Save Payment Details (allow debit only)
+        </a>
+        {{else}}
+        <button onclick="alert('Need to create a Customer first!')" class="inline-flex items-center px-4 py-2 border border-gray-700 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          Save Payment Details (allow debit only)
+        </button>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>
