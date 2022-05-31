@@ -36,6 +36,7 @@ router.get('/customer', (req, res) => {
     });
 });
 
+// Handle post request to create a Customer
 router.post('/customer', async (req, res) => {
   const name = req.body.name;
   const email = req.body.email;
@@ -61,7 +62,6 @@ router.post('/customer', async (req, res) => {
     CUSTOMER = customer.id;
     console.log('New default customer is ' + CUSTOMER);
 
-    console.log(customer);
     res.redirect('/success-customer');
   } catch (error) {
     console.log(error);
@@ -72,6 +72,7 @@ router.post('/customer', async (req, res) => {
   }
 });
 
+// Create a SetupIntent to allow the customer to save their card or bank account
 router.get('/setup-intent', async (req, res) => {
   const setupIntent = await stripe.setupIntents.create({
     customer: CUSTOMER,
@@ -85,12 +86,57 @@ router.get('/setup-intent', async (req, res) => {
   });
 });
 
+// Create a PaymentIntent to allow a Customer to complete a $100 payment
+router.get('/payment-intent', async (req, res) => {
+  const customer = await stripe.customers.retrieve(CUSTOMER);
+  const amount = 10000; // $100.00
+  const maxAmount = 10000; // $100.00
+
+  var paymentIntent;
+
+  // If the customer's country address is Mexico and the amount being charged is
+  // >= $100.00, then we want to run 3DS on this transaction
+  if (customer.address.country == 'MX' && amount >= maxAmount) {
+    paymentIntent = await stripe.paymentIntents.create({
+      amount: amount,
+      currency: 'usd',
+      customer: CUSTOMER,
+      payment_method_types: ['card', 'us_bank_account'],
+      // Force 3DS on this transaction if the customer uses a card
+      payment_method_options: {
+        card: {
+          request_three_d_secure: 'any',
+        },
+      },
+    });
+  }
+  else {
+    // If the conditions of the transaction don't meet this requirement, then
+    // no need to force 3DS to run.
+    paymentIntent = await stripe.paymentIntents.create({
+      amount: 10000,
+      currency: 'usd',
+      customer: CUSTOMER,
+      payment_method_types: ['card', 'us_bank_account'],
+    });
+  }
+
+  res.render('payment-intent', {
+    layout: 'dashboard.hbs',
+    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+    clientSecret: paymentIntent.client_secret,
+  });
+});
+
+// Handle loading of the customer portal link
 router.get('/customer-portal', async (req, res) => {
   const portalSession = await stripe.billingPortal.sessions.create({
     customer: CUSTOMER,
     return_url: 'http://localhost:3000/',
   });
 
+  // This page is hosted by Stripe so after generating the link, we redirect the
+  // Customer to this page
   res.redirect(portalSession.url);
 });
 
@@ -108,6 +154,9 @@ router.get('/success-customer', (req, res) => {
   });
 });
 
+// A route that returns JSON to specify whether or not the specified payment
+// method is a Debit card (or bank account). Basically it prevents the customer
+// from saving anything that isn't a credit card.
 router.get('/verify-debit-card/:pmId', async (req, res) => {
   const paymentMethodId = req.params.pmId;
   const pm = await stripe.paymentMethods.retrieve(paymentMethodId);

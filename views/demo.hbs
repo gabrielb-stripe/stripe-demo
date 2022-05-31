@@ -28,6 +28,17 @@
         </button>
         {{/if}}
       </div>
+      <div class="rounded-md py-4">
+        {{#if hasDefaultCustomer}}
+        <a href="/payment-intent" class="inline-flex items-center px-4 py-2 border border-gray-700 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          Make $100 Payment
+        </a>
+        {{else}}
+        <button onclick="alert('Need to create a Customer first!')" class="inline-flex items-center px-4 py-2 border border-gray-700 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          Make $100 Payment
+        </button>
+        {{/if}}
+      </div>
     </div>
   </div>
 </div>
